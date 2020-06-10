@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Database RDS"
+
+Parameters:
+    Password:
+        Description: Database Password
+        Type: 'String'
+        NoEcho: true
+
+    TipeInstance:
+        Description: Type EC2
+        Type: String
+        Default: db.t2.micro
+
+Resources:
+
+    myBD:
+        Type: AWS::RDS::DBInstance
+        Properties:
+            AllocatedStorage: 20
+            BackupRetentionPeriod: 0
+            CopyTagsToSnapshot: false
+            DBInstanceClass: !Ref TipeInstance
+            DBName: geoservicesbd
+            DBSubnetGroupName: !Ref mySubnetConf
+            DeletionProtection: false
+            Engine: MySQL
+            EngineVersion: "5.7.21"
+            MasterUsername: "root"
+            MasterUserPassword: !Ref Password 
+            MultiAZ: false
+            Port: "3306"
+            StorageType: gp2
+            VPCSecurityGroups:
+                - !ImportValue infrastructure-sgMysqlRDS
+
+    mySubnetConf:
+        Type: "AWS::RDS::DBSubnetGroup"
+        Properties:
+            DBSubnetGroupDescription: 'Privates Networks'
+            DBSubnetGroupName: 'dbprivate'
+            SubnetIds:
+                - !ImportValue infrastructure-subnetPrivate1
+                - !ImportValue infrastructure-subnetPrivate2
+
+Outputs:
+    myBDEndpoint:
+        Description: Database Endpoint
+        Value:
+            !GetAtt myBD.Endpoint.Address
+        Export:
+            Name: database-endpointRDS

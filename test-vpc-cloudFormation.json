@@ -1,0 +1,159 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Red",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "myVpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/16",
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "InstanceTenancy": "default"
+            }
+        },
+        "myIG": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {}
+        },
+        "attachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+                "Properties": {
+                    "VpcId": {"Ref" : "myVpc"},
+                    "InternetGatewayId": {"Ref": "myIG"}
+                }            
+        },
+        "myNetPublic1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {"Ref": "myVpc"},
+                "CidrBlock": "10.0.30.0/24",
+                "AvailabilityZone": "us-east-1a",
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "myNetPublic2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {"Ref": "myVpc"},
+                "CidrBlock": "10.0.40.0/24",
+                "AvailabilityZone": "us-east-1b",
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "myNetPrivate1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {"Ref": "myVpc"},
+                "CidrBlock": "10.0.3.0/24",
+                "AvailabilityZone": "us-east-1c"
+            }
+        },
+        "myNetPrivate2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {"Ref": "myVpc"},
+                "CidrBlock": "10.0.4.0/24",
+                "AvailabilityZone": "us-east-1d"
+            }
+        },
+        "myRouteTablePublic": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {"Ref": "myVpc"}
+            }
+        },
+        "myRouteTablePrivate": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {"Ref": "myVpc"}
+            }
+        },
+        "mySbRTPublic1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myNetPublic1"},
+                "RouteTableId": {"Ref": "myRouteTablePublic"}
+            }
+        },
+        "mySbRTPublic2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myNetPublic2"},
+                "RouteTableId": {"Ref": "myRouteTablePublic"}
+            }
+        },
+        "mySbRTPrivate1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myNetPrivate1"},
+                "RouteTableId": {"Ref": "myRouteTablePrivate"}
+            }
+        },
+        "mySbRTPrivate2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myNetPrivate1"},
+                "RouteTableId": {"Ref": "myRouteTablePrivate"}
+            }
+        },
+        "myRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "myIG",
+            "Properties": {
+                "RouteTableId": {"Ref": "myRouteTablePublic"},
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {"Ref": "myIG"}
+            }
+        }
+    },
+    "Outputs": {
+        "idVPC": {
+            "Description": "Id VPC",
+            "Value": {
+                "Ref": "myVpc"
+            },
+            "Export": {"Name": "infraestructura-idVPC"}
+        },
+        "cidrBlockVPC": {
+            "Description": "CIDR block IP VPC",
+            "Value": {
+                "Fn::GetAtt": ["myVpc", "CidrBlock"]
+            },
+            "Export": {"Name": "infraestructura-cidrBlockVPC"}
+        },
+        "subnetPrivate1": {
+            "Description": "SubNet Private 1",
+            "Value": {
+                "Ref": "myNetPrivate1"
+            },
+            "Export": {"Name": "infraestructura-subnetPrivate1"}
+        },
+        "subnetPrivate2": {
+            "Description": "SubNet Private 2",
+            "Value": {
+                "Ref": "myNetPrivate2"
+            },
+            "Export": {"Name": "infraestructura-subnetPrivate2"}
+        },
+        "subnetPublic1": {
+            "Description": "SubNet Public 1",
+            "Value": {
+                "Ref": "myNetPublic1"
+            },
+            "Export": {"Name": "infraestructura-subnetPublic1"}
+        },
+        "subnetPublic2": {
+            "Description": "SubNet Public 2",
+            "Value": {
+                "Ref": "myNetPublic2"
+            },
+            "Export": {"Name": "infraestructura-subnetPublic2"}
+        }
+    }
+
+    
+}

@@ -1,0 +1,44 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Ohio Instance",
+    "Metadata": {},
+    "Parameters": {
+        "InstanceType": {
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+        "ImageId": {
+            "Type": "String",
+            "Default": "ami-09d069a04349dc3cb",
+            "AllowedValues": ["ami-09d069a04349dc3cb", "ami-0d542ef84ec55d71c"]
+        },
+        "KeyPairCustom": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        }
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "MyPublicInstance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {"Ref": "ImageId"},
+                "KeyName": {"Ref": "KeyPairCustom"},
+                "InstanceType": {"Ref": "InstanceType"},
+                "SecurityGroupIds": [{"Fn::ImportValue": "infrastructure-sgBastion"}],
+                "SubnetId": {"Fn::ImportValue": "infrastructure-subnetPublic2"}
+            }
+        }
+    },
+    "Outputs": {
+        "PublicIp": {
+            "Description": "Public Ip Instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MyPublicInstance",
+                    "PublicIp"
+                ]
+            }
+        }
+    }
+}

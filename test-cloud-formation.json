@@ -1,0 +1,29 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Mi primera instancia",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "MiInstancia": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-09d069a04349dc3cb",
+                "KeyName": "aws_virginia",
+                "InstanceType": "t2.micro"
+            }
+        }
+    },
+    "Outputs": {
+        "IpPublica": {
+            "Description": "Ip Publica de la instancia",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MiInstancia",
+                    "PublicIp"
+                ]
+            }
+        }
+    }
+}

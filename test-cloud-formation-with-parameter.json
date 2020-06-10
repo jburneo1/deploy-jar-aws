@@ -1,0 +1,50 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Mi primera instancia",
+    "Metadata": {},
+    "Parameters": {
+        "TipoInstancia": {
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+        "IdImagen": {
+            "Type": "String",
+            "Default": "ami-09d069a04349dc3cb"
+        },
+        "KeyPairCustom": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        }
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "MiInstancia": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {"Ref": "IdImagen"},
+                "KeyName": {"Ref": "KeyPairCustom"},
+                "InstanceType": {"Ref": "TipoInstancia"}
+            }
+        }
+    },
+    "Outputs": {
+        "IpPublica": {
+            "Description": "Ip Publica de la instancia",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MiInstancia",
+                    "PublicIp"
+                ]
+            }
+        },
+        "DnsPublico": {
+            "Description": "Retorna DNS de mi instancia",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MiInstancia",
+                    "PublicDnsName"
+                ]
+            }
+        }
+    }
+}
