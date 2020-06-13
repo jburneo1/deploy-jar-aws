@@ -1,0 +1,132 @@
+
+#Comandos AWS
+
+// create stack from console
+aws cloudformation create-stack --stack-name pruebaConsolaAws --template-body file://test-cloud-formation.json
+
+// create stack from console with parameters
+create-stack --stack-name prueba --template-body file://test-cloud-formation-with-parameter.json --parameters file://parameter.json
+
+// instalar en la ec2 el utilitario de mysql (Dentro de la instancia)
+sudo yum install mysql -y
+
+// conectandose a la instancia privada
+mysql -h "url-instance" -u root -p
+
+
+
+
+#Comandos Maven - Java
+// generar jar
+mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
+
+
+#Comandos Docker
+ // Crear imagen: 
+ docker build -t NOMBRE_IMAGEN CONTEXTO 
+ 
+ // Crear tag de una imagen: 
+ docker tag imagen_demo:latest nueva_imagen:v1 
+
+ // Lanzar un contenedor a partir de una imagen*: 
+ docker run -d -p 3611:3606 --name mysql-container mysql
+ 
+ // Correr dos contenedores diferentes
+ docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
+ docker run -d -p 8084:8084 --link mysql_server:dns_base_datos --name api-java mi_api_persona
+ 
+ 
+ // Correr un contenedor con el tag de la imagen
+ docker run tomcat:8.5.50-jdk8-correto
+ 
+ // Correr contenedor mysql a partir de imagen
+ docker run -d -p 3311:3306 --name mysql -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=demobd -e MYSQL_ROOT_HOST=% mysql:5.7.28 --default-authentication-plugin=mysql_native_password
+ 
+ // Correr contenedor con dockerfile
+ docker run -d -p 3312:3306 my_image_bd
+ 
+ // Ver logs de un contenedor: (tipo tail con -f) 
+ docker logs contenedor-demo 
+ 
+ // Ver que propiedades tiene un contenedor: 
+ docker inspect contenedor-demo 
+ 
+ // Conectar vía ssh a un contenedor: 
+ docker exec -it contenedor-demo /bin/bash # O hacerlo solo con bash
+ docker exec -it contenedor-demo sh --open jdk alpine
+ 
+ // Detener un contenedor: 
+ docker stop contenedor-demo 
+ 
+ // Iniciar un contenedor ya detenido: 
+ docker start contenedor-demo
+ 
+ // Copiar archivos locales al contenedor
+ docker cp DML.sql mysql_server2:/tmp
+ 
+ // Ejecutar scripts docker
+ mysql -u root -p12345678 -e 'source /tmp/DML.sql;'
+ 
+ // Mostrar contenedores arriba
+ docker ps
+ 
+ // Mostrar contenedores
+ docker ps -a
+ 
+ // Correr Dockerfile
+ docker build -t nombreImagenCreada .
+ 
+ docker run -d -p 3312:3306 --name my_sql_server mi_image_bd
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ #Comandos linux
+ // encontrar la ruta del directorio (carpeta) de trabajo actual en el que te encuentras
+ pwd
+ 
+ // navegar por los archivos y directorios de Linux
+cd
+cd .. (con dos puntos) para ir un directorio hacia arriba
+cd para ir directamente a la carpeta de inicio
+cd- (con un guión) para ir al directorio anterior
+ 
+ // ver el contenido de un directorio
+ ls
+ls -R también listará todos los archivos en los subdirectorios
+ls -a mostrará los archivos ocultos
+ls -al listará los archivos y directorios con información detallada como los permisos, el tamaño, el propietario, etc.
+
+// copiar archivos del directorio actual a un directorio diferente
+cp escenario.jpg /home/nombredeusuario/Imagenes
+
+// descargar archivos de Internet
+wget "enlaceDescarga"
+
+// Levanta el Tomcat
+sh startup.sh 
+// Dar permisos al archivo catalina
+chmod 777 catalina.sh 
+
+//Ver carpetas con permisos
+ls -l
+
+//ingresar a postgres
+sudo -u postgres psql
+// conectar a la bd
+\connect db_media_app;
+
+//Listar todas las bases de datos.
+show databases;
+//Listar todas las tablas de una base de datos.
+show tables;
+// – Muestra información sobre las tablas de la base de datos.
+show table status;
+
+//– Muestra la estructura de una tabla de la base de datos
+describe [table]; 
