@@ -1,0 +1,8 @@
+taller\ninja\demodocker\dto\RespuestaApi.class
+taller\ninja\demodocker\service\PersonaService.class
+taller\ninja\demodocker\App.class
+taller\ninja\demodocker\service\impl\PersonaServiceImpl.class
+taller\ninja\demodocker\controller\api\ApiPersonaController.class
+taller\ninja\demodocker\controller\StatusController.class
+taller\ninja\demodocker\dao\PersonaDAO.class
+taller\ninja\demodocker\model\Persona.class

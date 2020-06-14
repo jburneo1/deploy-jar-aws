@@ -1,0 +1,121 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Ohio Instance",
+    "Metadata": {},
+    "Parameters": {
+        "InstanceType": {
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+        "ImageId": {
+            "Type": "String",
+            "Default": "ami-09d069a04349dc3cb",
+            "AllowedValues": ["ami-09d069a04349dc3cb", "ami-0d542ef84ec55d71c"]
+        },
+        "KeyPairCustom": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "passwordBD": {
+            "Type": "String",
+            "Default": "12345678",
+            "NoEcho": true
+        }
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "MyPublicInstance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {"Ref": "ImageId"},
+                "KeyName": {"Ref": "KeyPairCustom"},
+                "InstanceType": {"Ref": "InstanceType"},
+                "SecurityGroupIds": [{"Fn::ImportValue": "infrastructure-sgBastion"}],
+                "SubnetId": {"Fn::ImportValue": "infrastructure-subnetPublic2"}
+            }
+        },
+        "InstanceJavaMySql": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {"Ref": "ImageId"},
+                "KeyName": {"Ref": "KeyPairCustom"},
+                "InstanceType": {"Ref": "InstanceType"},
+                "SecurityGroupIds": [{"Fn::ImportValue": "infrastructure-sgBastion"}],
+                "SubnetId": {"Fn::ImportValue": "infrastructure-subnetPublic1"},
+                "UserData": {"Fn::Base64": {
+                    "Fn::Join": [
+                        "", [
+                            "#!/bin/bash -xe \n",
+                            "yum update -y \n",
+                            "yum install mysql -y \n",
+                            "yum install java-1.8.0 -y \n",
+                            "yum remove java-1.7.0-openjdk -y \n",
+                            "wget https://raw.githubusercontent.com/jburneo1/deploy-jar-aws/master/DDL.sql \n",
+                            "wget https://raw.githubusercontent.com/jburneo1/deploy-jar-aws/master/DML.sql \n",
+                            "wget https://github.com/jburneo1/deploy-jar-aws/raw/master/api-persona-docker-0.0.1-SNAPSHOT.jar \n",
+                            "cp DDL.sql /tmp/DDL.sql\n",
+                            "cp DDL.sql /tmp/DML.sql\n",
+                            "mysql -h ", { "Fn::ImportValue": "database-endpointRDS" } ," -u root -p", { "Ref": "passwordBD" } ," -e \"source /tmp/DDL.sql\" \n",
+                            "mysql -h ", { "Fn::ImportValue": "database-endpointRDS" } ," -u root -p", { "Ref": "passwordBD" } ," -e \"source /tmp/DML.sql\" \n",
+                            "echo 'export host=",{ "Fn::ImportValue": "database-endpointRDS" },"' >> ~/.bash_profile \n",
+                            "echo 'export port=3306' >> ~/.bash_profile \n",
+                            "echo 'export database=demobd' >> ~/.bash_profile \n",
+                            "echo 'export username=root' >> ~/.bash_profile \n",
+                            "echo 'export password=",{ "Ref": "passwordBD" },"' >> ~/.bash_profile \n",
+                            "source ~/.bash_profile \n",
+                            "nohup java -Djava.security.egd=file:/dev/./urandom -jar api-persona-docker-0.0.1-SNAPSHOT.jar | tee output.log & "
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "InstanceJavaMysql1": {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "ImageId" : { "Ref": "ImageId" },
+                "KeyName" : { "Ref": "KeyPairCustom" },
+                "InstanceType": { "Ref": "InstanceType" },
+                "SecurityGroupIds": [{ "Fn::ImportValue" : "infrastructure-sgBastion" }],
+                "SubnetId": { "Fn::ImportValue" : "infrastructure-subnetPublic1" },
+                "UserData": { "Fn::Base64" : { 
+                    "Fn::Join" : [
+                        "", [
+                            "#!/bin/bash -xe \n",
+                            "yum update -y \n",
+                            "yum install mysql -y \n",
+                            "yum install java-1.8.0 -y \n",
+                            "yum remove java-1.7.0-openjdk -y \n",
+                            "wget https://raw.githubusercontent.com/wjma90/taller-docker-swarm/master/parte-I/basedatos/scripts/DDL.sql \n",
+                            "wget https://raw.githubusercontent.com/wjma90/taller-docker-swarm/master/parte-I/basedatos/scripts/DML.sql \n",
+                            "wget https://github.com/wjma90/taller-docker-swarm/raw/master/parte-I/api-persona/compilado/api-persona-docker-0.0.1-SNAPSHOT.jar \n",
+                            "cp DDL.sql /tmp/DDL.sql\n",
+                            "cp DML.sql /tmp/DML.sql\n",
+                            "mysql -h ", { "Fn::ImportValue": "database-endpointRDS" } ," -u root -p", { "Ref": "passwordBD" } ," -e \"source /tmp/DDL.sql\" \n",
+                            "mysql -h ", { "Fn::ImportValue": "database-endpointRDS" } ," -u root -p", { "Ref": "passwordBD" } ," -e \"source /tmp/DML.sql\" \n",
+                            "echo 'export host=",{ "Fn::ImportValue": "database-endpointRDS" },"' >> ~/.bash_profile \n",
+                            "echo 'export port=3306' >> ~/.bash_profile \n",
+                            "echo 'export database=demobd' >> ~/.bash_profile \n",
+                            "echo 'export username=root' >> ~/.bash_profile \n",
+                            "echo 'export password=",{ "Ref": "passwordBD" },"' >> ~/.bash_profile \n",
+                            "source ~/.bash_profile \n",
+                            "nohup java -Djava.security.egd=file:/dev/./urandom -jar api-persona-docker-0.0.1-SNAPSHOT.jar | tee output.log & "
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    },                      
+    "Outputs": {
+        "PublicIp": {
+            "Description": "Public Ip Instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "MyPublicInstance",
+                    "PublicIp"
+                ]
+            }
+        }
+    }
+}
