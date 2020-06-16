@@ -1,0 +1,62 @@
+version: '3.4'
+
+services:
+
+    mysql_server:
+        #Ignorado cuando se usa en modo swarm (swarm usa imágenes de un registry)
+        build: ../basedatos/
+        image: jburneo1/cawsonline-mysql:latest
+        environment:
+            - MYSQL_ROOT_PASSWORD=12345678
+            - MYSQL_DATABASE=demobd
+            - MYSQL_PASSWORD=toor
+            - MYSQL_ROOT_HOST=%
+        volumes: 
+            - my-data:/var/lib/mysql/
+        ports:
+            - "3310:3306" 
+        #Ignorado cuando se usa en swarm mode (usar restart_policy)
+        restart: on-failure
+        command: --default-authentication-plugin=mysql_native_password
+    
+    api-persona:
+        build: ../api-persona/
+        image: jburneo1/cawsonline-api_persona:latest
+        environment: 
+            - JAVA_OPTS=""
+            - host=mysql_server
+            - port=3306
+            - database=demobd
+            - username=root
+            - password=12345678
+        depends_on: 
+            - mysql_server
+         #Si no especifico un puerto host, se creará uno aleatorio
+        ports: 
+            - "8080"
+        restart: on-failure
+        #Sobreescribiendo el entrypoint del dockerfile
+        entrypoint: java -jar /workspace/app.jar
+
+    api-preferencia:
+        build: ../api-preferencia/
+        image: jburneo1/cawsonline-api_preferencia:latest
+        environment: 
+            - JAVA_OPTS=""
+            - host=mysql_server
+            - port=3306
+            - database=demobd
+            - username=root
+            - password=12345678
+            - url_apipersona:api-persona
+            - port_apipersona= 8084
+        depends_on: 
+            - mysql_server
+            - api-persona
+        ports: 
+            - "8084"
+        restart: on-failure
+        entrypoint: java -jar /workspace/app.jar
+
+volumes: 
+    my-data:

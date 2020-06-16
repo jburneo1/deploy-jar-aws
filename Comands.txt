@@ -22,7 +22,7 @@ mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
 
 
 #Comandos Docker
- // Crear imagen: 
+ // build image: 
  docker build -t NOMBRE_IMAGEN CONTEXTO 
  
  // Crear tag de una imagen: 
@@ -30,6 +30,9 @@ mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
 
  // Lanzar un contenedor a partir de una imagen*: 
  docker run -d -p 3611:3606 --name mysql-container mysql
+ docker run -d --name servidor_mysql jburneo1/caws-mysql #Está corriendo en el port por default
+ docker run -d -p 8084:8084 --name api_persona --link servidor_mysql:dns_base_datos jburneo1/caws-api-personas
+ docker run -d -p 8085:8084 --name api_preferencia --link servidor_mysql:mysql_server --link api_persona:apipersona jburneo1/jburneo1/api-preferencias
  
  // Correr dos contenedores diferentes
  docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
@@ -73,16 +76,12 @@ mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
  // Mostrar contenedores
  docker ps -a
  
- // Correr Dockerfile
+ // Crear imagen con dockerfile
  docker build -t nombreImagenCreada .
  
- docker run -d -p 3312:3306 --name my_sql_server mi_image_bd
  
- 
- 
- 
- 
- 
+ // Estadisticas docker
+ docker stats
  
  
  
