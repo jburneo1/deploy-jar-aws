@@ -1,0 +1,91 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Red",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "sgMysqlRDS": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security for Mysql RDS",
+                "VpcId": {
+                    "Fn::ImportValue": "infrastructure-idVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "TCP",
+                        "FromPort": "3306",
+                        "ToPort": "3306",
+                        "SourceSecurityGroupId": {"Ref": "sgBastion"}
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgMysqlRDS"
+                    }
+                ]
+            }
+        },
+        "sgBastion": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security for Mysql RDS",
+                "VpcId": {
+                    "Fn::ImportValue": "infrastructure-idVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "TCP",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "TCP",
+                        "FromPort": "8080",
+                        "ToPort": "8080",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgBastion"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "sgMysqlRDS": {
+            "Description": "Database Security Group",
+            "Value": {
+                "Fn::GetAtt": [
+                    "sgMysqlRDS",
+                    "GroupId"
+                ]
+            },
+            "Export": {
+                "Name": "infrastructure-sgMysqlRDS"
+            }
+        },
+        "sgBastion": {
+            "Description": "Security Group EC2 Public Net",
+            "Value": {
+                "Fn::GetAtt": [
+                    "sgBastion",
+                    "GroupId"
+                ]
+            },
+            "Export": {
+                "Name": "infrastructure-sgBastion"
+            }
+        }
+        
+    }
+
+}
