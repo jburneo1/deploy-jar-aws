@@ -274,6 +274,34 @@ mqsireportproperties DataPower -e DP -o ComIbmJVMManager -r
 
 
 
+Config Proxy GIT--------------------------------------------------------------
+git config --global http.proxy http://tat1jbu:98110163843***Jebg@10.169.104.166:8080
+npm config set proxy "http://tat1jbu:Capslockkp8834***Jebg@10.169.104.166:8080" tuya
+pip config set https://tat1jbu:Comeburra9540894.@10.169.104.166:8080
+C:\Users\1756544\AppData\Roaming\Pip --Ruta config proxy Pip
+pip install --proxy=https://[username:password@]proxyserver:port
+npm config set proxy
+
+--npm config set proxy "http://1756544:Jebg98110163843.@10.101.85.253:8080" tata
+npm config rm proxy -- default proxy
+pip config rm proxy
+
+change proxyuser to your proxy user
+change proxypwd to your proxy password
+change proxy.server.com to the URL of your proxy server
+change 8080 to the proxy port configured on your proxy server
+--------------------------------------------------------------
+
+
+----------------
+
+git config --global --unset-all http.proxy
+---------------------------------------------
+
+--------------------------------
+
+
+
 
 
 
