@@ -2,86 +2,108 @@
 #Comandos AWS
 
 // create stack from console
-aws cloudformation create-stack --stack-name pruebaConsolaAws --template-body file://test-cloud-formation.json
+● aws cloudformation create-stack --stack-name pruebaConsolaAws --template-body file://test-cloud-formation.json
 
 // create stack from console with parameters
-create-stack --stack-name prueba --template-body file://test-cloud-formation-with-parameter.json --parameters file://parameter.json
+● create-stack --stack-name prueba --template-body file://test-cloud-formation-with-parameter.json --parameters file://parameter.json
 
 // instalar en la ec2 el utilitario de mysql (Dentro de la instancia)
-sudo yum install mysql -y
+● sudo yum install mysql -y
 
 // conectandose a la instancia privada
-mysql -h "url-instance" -u root -p
+● mysql -h "url-instance" -u root -p
 
 
 
 
 #Comandos Maven - Java
 // generar jar
-mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
+● mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
 
 
 #Comandos Docker
  // build image: 
- docker build -t NOMBRE_IMAGEN CONTEXTO 
+ ● docker build -t NOMBRE_IMAGEN CONTEXTO 
  
  // Crear tag de una imagen: 
- docker tag imagen_demo:latest nueva_imagen:v1 
+ ● docker tag imagen_demo:latest nueva_imagen:v1 
 
  // Lanzar un contenedor a partir de una imagen*: 
- docker run -d -p 3611:3606 --name mysql-container mysql
- docker run -d --name servidor_mysql jburneo1/caws-mysql #Está corriendo en el port por default
- docker run -d -p 8084:8084 --name api_persona --link servidor_mysql:dns_base_datos jburneo1/caws-api-personas
- docker run -d -p 8085:8084 --name api_preferencia --link servidor_mysql:mysql_server --link api_persona:apipersona jburneo1/jburneo1/api-preferencias
+● docker run -d -p 3611:3606 --name mysql-container mysql
+● docker run -d --name servidor_mysql jburneo1/caws-mysql #Está corriendo en el port por default
+● docker run -d -p 8085:8084 --name api_persona --link servidor_mysql:dns_base_datos jburneo1/api-java
+● docker run -d -p 8085:8084 --name api-java-preferencias --link servidor_mysql:mysql_server --link api_persona:apipersona jburneo1/api-java
  
  // Correr dos contenedores diferentes
- docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
- docker run -d -p 8084:8084 --link mysql_server:dns_base_datos --name api-java mi_api_persona
+● docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
+● docker run -d -p 8084:8084 --link mysql_server:dns_base_datos --name api-java mi_api_persona
  
  
  // Correr un contenedor con el tag de la imagen
- docker run tomcat:8.5.50-jdk8-correto
+● docker run tomcat:8.5.50-jdk8-correto
  
  // Correr contenedor mysql a partir de imagen
- docker run -d -p 3311:3306 --name mysql -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=demobd -e MYSQL_ROOT_HOST=% mysql:5.7.28 --default-authentication-plugin=mysql_native_password
+● docker run -d -p 3311:3306 --name mysql -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=demobd -e MYSQL_ROOT_HOST=% mysql:5.7.28 --default-authentication-plugin=mysql_native_password
  
  // Correr contenedor con dockerfile
- docker run -d -p 3312:3306 my_image_bd
+● docker run -d -p 3312:3306 my_image_bd
  
  // Ver logs de un contenedor: (tipo tail con -f) 
- docker logs contenedor-demo 
+● docker logs contenedor-demo 
  
  // Ver que propiedades tiene un contenedor: 
- docker inspect contenedor-demo 
+● docker inspect contenedor-demo 
  
  // Conectar vía ssh a un contenedor: 
- docker exec -it contenedor-demo /bin/bash # O hacerlo solo con bash
- docker exec -it contenedor-demo sh --open jdk alpine
+● docker exec -it contenedor-demo /bin/bash # O hacerlo solo con bash
+● docker exec -it contenedor-demo sh --open jdk alpine
  
  // Detener un contenedor: 
- docker stop contenedor-demo 
+● docker stop contenedor-demo 
  
  // Iniciar un contenedor ya detenido: 
- docker start contenedor-demo
+● docker start contenedor-demo
  
  // Copiar archivos locales al contenedor
- docker cp DML.sql mysql_server2:/tmp
+● docker cp DML.sql mysql_server2:/tmp
  
  // Ejecutar scripts docker
- mysql -u root -p12345678 -e 'source /tmp/DML.sql;'
+● mysql -u root -p12345678 -e 'source /tmp/DML.sql;'
  
  // Mostrar contenedores arriba
- docker ps
+● docker ps
  
  // Mostrar contenedores
- docker ps -a
+● docker ps -a
  
  // Crear imagen con dockerfile
- docker build -t nombreImagenCreada .
+ ● docker build -t nombreImagenCreada .
  
  
  // Estadisticas docker
- docker stats
+ ● docker stats
+ 
+ #Docker Compose
+ ● docker-compose up 
+ ● docker-compose build 
+ ● docker-compose up -d 
+ ● docker-compose stop
+
+ - Construir las imágenes: 
+ ● docker-compose build
+ Crear los contenedores, enlazarlos y ejecutarlos (todo en el mismo comando - detach): 
+ ● docker-compose up -d
+- Destruir los contenedores y enlaces de red: 
+ ● docker compose down
+- Destruir los contenedores y enlaces de red y volúmenes creados por el compose: 
+ ● docker compose down -v
+- Lanzar un servicio que esté definido en el compose y no los demás servicios: 
+ ● docker-compose up -d appweb
+
+ - Detener un service: 
+ ● docker-compose stop mysql_server
+- Subir imágenes a un registry: 
+ ● docker-compose  push
  
  
  
@@ -113,7 +135,7 @@ sh startup.sh
 chmod 777 catalina.sh 
 
 //Ver carpetas con permisos
-ls -l
+ ls -l
 
 //ingresar a postgres
 sudo -u postgres psql
@@ -121,11 +143,147 @@ sudo -u postgres psql
 \connect db_media_app;
 
 //Listar todas las bases de datos.
-show databases;
+ show databases;
 //Listar todas las tablas de una base de datos.
 show tables;
 // – Muestra información sobre las tablas de la base de datos.
-show table status;
+ show table status;
 
 //– Muestra la estructura de una tabla de la base de datos
-describe [table]; 
+ describe [table]; 
+
+
+
+ #Comandos Broker 
+
+
+ Active el soporte de SSL en el intermediario, estableciendo un valor para enableSSLConnector
+
+mqsichangeproperties DataPower -b httplistener -o HTTPListener -n enableSSLConnector -v true
+
+Opcional: Si no desea utilizar el puerto predeterminado 7083 para los mensajes HTTPS, especifique el puerto en el que el intermediario escucha:
+mqsichangeproperties DataPower -b httplistener -o HTTPSConnector -n port -v 7080
+
+
+Queue manager specified on the integration node	LaboratoriosMQ
+
+
+
+En sistemas UNIX, sólo los procesos que se ejecutan con una cuenta de usuario con privilegios (en muchos casos, root)
+ pueden vincularse a puertos inferiores al 1024.
+
+Para que el intermediario escuche en estos puertos, el ID de usuario con el que se inicie el intermediario debe ser el del usuario root.
+Opcional: Habilitar autenticación de cliente (autenticación mutua):
+
+mqsichangeproperties DataPower -b httplistener -o HTTPSConnector -n clientAuth -v true
+
+
+Reinicie el intermediario tras cambiar alguna de las propiedades del escucha HTTP.
+Opcional: Utilice los mandatos siguientes para visualizar las propiedades del escucha HTTP:
+mqsireportproperties DataPower -b httplistener -o AllReportableEntityNames -a 
+mqsireportproperties DataPower -b httplistener -o "AllReportableEntityNames" -r 
+mqsireportproperties DataPower -b httplistener -o HTTPListener -a 
+mqsireportproperties DataPower -b httplistener -o HTTPSConnector -a 
+mqsireportproperties DataPower -e DP -o HTTPSConnector -r
+
+
+
+---
+
+habilitar a nivel de grupo de ejecuccion para todas las aplicaciones desplegadas. sean soap o res
+mqsichangeproperties DataPower -e DP -o ExecutionGroup -n httpNodesUseEmbeddedListener -v true
+
+mqsichangeproperties DataPower -e DP -o ExecutionGroup -n soapNodesUseEmbeddedListener -v true
+
+----
+
+Visualice los valores actuales de las propiedades del registro de intermediario:
+mqsireportproperties DataPower -o BrokerRegistry –r
+
+----  C:\Program Files\IBM\AlmacenJKS
+Establezca la propiedad del almacén de claves:
+mqsichangeproperties DataPower -o BrokerRegistry -n brokerKeystoreFile -v C:\ProgramData\IBM\MQSI\10.0\AlmacenJKS\laboratorio2.jks
+
+
+Establezca la propiedad del almacén de confianza:
+mqsichangeproperties DataPower -o BrokerRegistry -n brokerTruststoreFile -v C:\ProgramData\IBM\MQSI\10.0\AlmacenJKS\laboratorio2.jks
+
+
+
+Detenga el intermediario:
+mqsistop DataPower
+
+
+Establezca la contraseña para el almacén de claves:
+mqsisetdbparms DataPower -n brokerKeystore::password -u ignore -p skate123
+
+
+Establezca la contraseña para el almacén de confianza:
+mqsisetdbparms DataPower -n brokerTruststore::password -u ignore -p skate123
+
+
+Inicie el intermediario:
+mqsistart DataPower
+
+
+Visualice y verifique las propiedades de registro del intermediario:
+mqsireportproperties DataPower -o BrokerRegistry –r
+
+
+
+--------------------------------------------------------------------nivel de grupo de ejecucion----------------------------------------------
+
+Visualice los valores actuales de las propiedades ComIbmJVMManager.
+mqsireportproperties DataPower -e DP -o ComIbmJVMManager -r
+
+
+Establezca la propiedad del almacén de claves.
+
+-----
+url
+https://www.ibm.com/support/knowledgecenter/es/SSMKHH_9.0.0/com.ibm.etools.mft.doc/ap34021_.htm
+
+https://www.ibm.com/support/knowledgecenter/es/SSMKHH_9.0.0/com.ibm.etools.mft.doc/ap34020_.htm
+
+
+----
+
+https://192.168.136.202:7080/intf/fw/ConsultaCuposTarjeta/V1.0
+
+
+
+
+mqsichangeproperties DataPower -e DP -o ComIbmJVMManager -n keystoreFile -v C:\ProgramData\IBM\MQSI\10.0\AlmacenJKS\Prueba.jks
+
+
+Establezca la propiedad de la clave de contraseña del almacén de claves. El valor de esta propiedad está en formato un_nombre_prefijo::contraseña. Este valor se utiliza para correlacionar la contraseña que está definida en el mandato mqsisetdbparms.
+mqsichangeproperties DataPower -e DP -o ComIbmJVMManager -n keystorePass -v DPKeystore::password
+
+
+Establezca la propiedad del almacén de confianza.
+mqsichangeproperties DataPower -e DP -o ComIbmJVMManager -n truststoreFile  -v C:\ProgramData\IBM\MQSI\10.0\AlmacenJKS\Prueba.jks
+
+
+Establezca la propiedad de la clave de contraseña del almacén de confianza. El valor de esta propiedad está en formato un_nombre_prefijo::contraseña. Este valor se utiliza para correlacionar la contraseña que está definida en el mandato mqsisetdbparms.
+mqsichangeproperties DataPower -e DP -o ComIbmJVMManager -n truststorePass -v DPTruststore::password
+
+
+Detenga el intermediario.
+mqsistop DataPower
+
+
+Establezca la contraseña para el almacén de claves.
+mqsisetdbparms DataPower -n DPKeystore::password -u ignore -p skate123
+
+
+Establezca la contraseña para el almacén de confianza.
+mqsisetdbparms DataPower -n DPTruststore::password -u ignore -p skate123
+
+
+
+Inicie el intermediario.
+mqsistart DataPower
+
+
+Visualice y verifique las propiedades de ComIbmJVMManager.
+mqsireportproperties DataPower -e DP -o ComIbmJVMManager -r

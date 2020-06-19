@@ -33,7 +33,7 @@ services:
             - mysql_server
          #Si no especifico un puerto host, se creará uno aleatorio
         ports: 
-            - "8080"
+            - "8084"
         restart: on-failure
         #Sobreescribiendo el entrypoint del dockerfile
         entrypoint: java -jar /workspace/app.jar
@@ -48,8 +48,8 @@ services:
             - database=demobd
             - username=root
             - password=12345678
-            - url_apipersona:api-persona
-            - port_apipersona= 8084
+            - url_apipersona=api-persona
+            - port_apipersona=8084
         depends_on: 
             - mysql_server
             - api-persona
