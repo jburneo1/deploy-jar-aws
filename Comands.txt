@@ -29,52 +29,52 @@
  ● docker tag imagen_demo:latest nueva_imagen:v1 
 
  // Lanzar un contenedor a partir de una imagen*: 
-● docker run -d -p 3611:3606 --name mysql-container mysql
-● docker run -d --name servidor_mysql jburneo1/caws-mysql #Está corriendo en el port por default
-● docker run -d -p 8085:8084 --name api_persona --link servidor_mysql:dns_base_datos jburneo1/api-java
-● docker run -d -p 8085:8084 --name api-java-preferencias --link servidor_mysql:mysql_server --link api_persona:apipersona jburneo1/api-java
+ docker run -d -p 3611:3606 --name mysql-container mysql
+ docker run -d --name servidor_mysql jburneo1/caws-mysql #Está corriendo en el port por default
+ docker run -d -p 8085:8084 --name api_persona --link servidor_mysql:dns_base_datos jburneo1/api-java
+ docker run -d -p 8085:8084 --name api-java-preferencias --link servidor_mysql:mysql_server --link api_persona:apipersona jburneo1/api-java
  
  // Correr dos contenedores diferentes
-● docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
-● docker run -d -p 8084:8084 --link mysql_server:dns_base_datos --name api-java mi_api_persona
+ docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
+ docker run -d -p 8084:8084 --link mysql_server:dns_base_datos --name api-java mi_api_persona
  
  
  // Correr un contenedor con el tag de la imagen
-● docker run tomcat:8.5.50-jdk8-correto
+ docker run tomcat:8.5.50-jdk8-correto
  
  // Correr contenedor mysql a partir de imagen
-● docker run -d -p 3311:3306 --name mysql -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=demobd -e MYSQL_ROOT_HOST=% mysql:5.7.28 --default-authentication-plugin=mysql_native_password
+ docker run -d -p 3311:3306 --name mysql -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=demobd -e MYSQL_ROOT_HOST=% mysql:5.7.28 --default-authentication-plugin=mysql_native_password
  
  // Correr contenedor con dockerfile
-● docker run -d -p 3312:3306 my_image_bd
+ docker run -d -p 3312:3306 my_image_bd
  
  // Ver logs de un contenedor: (tipo tail con -f) 
-● docker logs contenedor-demo 
+ docker logs contenedor-demo 
  
  // Ver que propiedades tiene un contenedor: 
-● docker inspect contenedor-demo 
+ docker inspect contenedor-demo 
  
  // Conectar vía ssh a un contenedor: 
-● docker exec -it contenedor-demo /bin/bash # O hacerlo solo con bash
-● docker exec -it contenedor-demo sh --open jdk alpine
+ docker exec -it contenedor-demo /bin/bash # O hacerlo solo con bash
+ docker exec -it contenedor-demo sh --open jdk alpine
  
  // Detener un contenedor: 
-● docker stop contenedor-demo 
+ docker stop contenedor-demo 
  
  // Iniciar un contenedor ya detenido: 
-● docker start contenedor-demo
+ docker start contenedor-demo
  
  // Copiar archivos locales al contenedor
-● docker cp DML.sql mysql_server2:/tmp
+ docker cp DML.sql mysql_server2:/tmp
  
  // Ejecutar scripts docker
-● mysql -u root -p12345678 -e 'source /tmp/DML.sql;'
+ mysql -u root -p12345678 -e 'source /tmp/DML.sql;'
  
  // Mostrar contenedores arriba
-● docker ps
+ docker ps
  
  // Mostrar contenedores
-● docker ps -a
+ docker ps -a
  
  // Crear imagen con dockerfile
  ● docker build -t nombreImagenCreada .
@@ -88,22 +88,6 @@
  ● docker-compose build 
  ● docker-compose up -d 
  ● docker-compose stop
-
- - Construir las imágenes: 
- ● docker-compose build
- Crear los contenedores, enlazarlos y ejecutarlos (todo en el mismo comando - detach): 
- ● docker-compose up -d
-- Destruir los contenedores y enlaces de red: 
- ● docker compose down
-- Destruir los contenedores y enlaces de red y volúmenes creados por el compose: 
- ● docker compose down -v
-- Lanzar un servicio que esté definido en el compose y no los demás servicios: 
- ● docker-compose up -d appweb
-
- - Detener un service: 
- ● docker-compose stop mysql_server
-- Subir imágenes a un registry: 
- ● docker-compose  push
  
  
  
@@ -135,7 +119,7 @@ sh startup.sh
 chmod 777 catalina.sh 
 
 //Ver carpetas con permisos
- ls -l
+ls -l
 
 //ingresar a postgres
 sudo -u postgres psql
@@ -143,21 +127,21 @@ sudo -u postgres psql
 \connect db_media_app;
 
 //Listar todas las bases de datos.
- show databases;
+show databases;
 //Listar todas las tablas de una base de datos.
 show tables;
 // – Muestra información sobre las tablas de la base de datos.
- show table status;
+show table status;
 
 //– Muestra la estructura de una tabla de la base de datos
- describe [table]; 
+describe [table];
 
 
 
- #Comandos Broker 
+// Comandos broker
 
 
- Active el soporte de SSL en el intermediario, estableciendo un valor para enableSSLConnector
+Active el soporte de SSL en el intermediario, estableciendo un valor para enableSSLConnector
 
 mqsichangeproperties DataPower -b httplistener -o HTTPListener -n enableSSLConnector -v true
 
@@ -287,3 +271,11 @@ mqsistart DataPower
 
 Visualice y verifique las propiedades de ComIbmJVMManager.
 mqsireportproperties DataPower -e DP -o ComIbmJVMManager -r
+
+
+
+
+
+
+
+
