@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+
+  mysql_server:
+    build: ./dockerfile-mysql/
+    image: wjma90/mawsonline-mysql_dummy:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=toor
+      - MYSQL_DATABASE=geoserviciosbd
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=toor
+      - MYSQL_ROOT_HOST=%
+    volumes: 
+      - ./dockerfile-mysql/scripts-mysql/:/docker-entrypoint-initdb.d/
+    ports:
+      - "3310:3306"
+    restart: on-failure
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - backend
+
+  monolito:
+    build: ./monolito/
+    image: wjma90/mawsonline-monolito:latest
+    environment: 
+      - userPoolId=us-east-2_WT2WtCN2t
+      - clientId=5cap3h095kp2u5uq6n8s6j1kkr
+      - host=mysql_server
+      - port=3306
+      - database=geoserviciosbd
+      - username=root
+      - password=toor
+      - nameSQS=mi_primera_cola
+      - arnTopicoSNS=arn:aws:sns:us-east-2:666006729234:mi_primer_topico
+      - emailSend=w.marchanaranda@gmail.com
+      - emailRecep=w.marchanaranda@gmail.com
+      - aws_Region_Cognito=us-east-2
+      - AWS_ACCESS_KEY_ID=AKIAZWEIYGIJIDAWRXHT
+      - AWS_SECRET_ACCESS_KEY=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
+    depends_on: 
+      - mysql_server
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    entrypoint: dockerize -wait tcp://mysql_server:3306 -timeout 10m java -jar /workspace/app.jar
+    networks:
+      - backend
+
+volumes:
+  my-data:
+
+networks:
+  backend: 
