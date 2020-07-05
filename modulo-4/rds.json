@@ -1,0 +1,117 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "RDS Database Mysql To Course",
+    "Metadata": {},
+    "Parameters": {
+        "userMasterBD": {
+            "Type": "String",
+            "Description": "User ROOT BD",
+            "NoEcho": true,
+            "Default": "root"
+        },
+        "passwordMasterBD": {
+            "Type": "String",
+            "Description": "Password ROOT BD",
+            "NoEcho": true,
+            "Default": "12345678"
+        },
+        "InstanceType": {
+            "Type": "String",
+            "Default": "db.t2.micro"
+        }
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "myDBSubnetGroup": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupDescription": "Private Networks VPC",
+                "SubnetIds": [
+                    {
+                        "Fn::ImportValue": "infrastructure-subNetPrivate1"
+                    },
+                    {
+                        "Fn::ImportValue": "infrastructure-subNetPrivate2"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnetGroupCF"
+                    }
+                ]
+            }
+        },
+        "myBD": {
+            "Type": "AWS::RDS::DBInstance",
+
+            "Properties": {
+                "DBName": "geoserviciosbd",
+                "DBInstanceIdentifier": "DBCourse",
+                "BackupRetentionPeriod": "0",
+                "AllocatedStorage": "20",
+                "StorageType": "gp2",
+                "DBInstanceClass": {"Ref": "InstanceType"},
+                "MultiAZ": false,
+                "Engine": "MySQL",
+                "EngineVersion": "5.7.21",
+                "MasterUsername": {
+                    "Ref": "userMasterBD"
+                },
+                "MasterUserPassword": {
+                    "Ref": "passwordMasterBD"
+                },
+                "DBSubnetGroupName": {
+                    "Ref": "myDBSubnetGroup"
+                },
+                "VPCSecurityGroups": [{
+                    "Fn::ImportValue": "infrastructure-sgMysqlRDS"
+                }],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MySQL Datababase"
+                    }
+                ]
+            },
+            "DeletionPolicy": "Delete"
+        }
+
+    },
+    "Outputs": {
+        "endPointRDS": {
+            "Description": "Endpoint to RDS Connection",
+            "Value": {
+                "Fn::GetAtt": [
+                    "myBD",
+                    "Endpoint.Address"
+                ]
+            },
+            "Export": {"Name": "database-enpointRDS"}
+        },
+        "DBconection": {
+            "Description": "DNS and Port to access to database",
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        {
+                            "Fn::GetAtt": [
+                                "myBD",
+                                "Endpoint.Address"
+                            ]
+                        },
+                        ":",
+                        {
+                            "Fn::GetAtt": [
+                                "myBD",
+                                "Endpoint.Port"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-FROM mysql:5.7.27
+FROM mysql:5.7.24
 LABEL maintainer="El Yisus"
 #WORKDIR /workspace
 #Podemos usar ADD o Copy

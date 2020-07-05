@@ -1,0 +1,48 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "VPC del curso",
+    "Metadata": {},
+    "Parameters": {
+        "InstanceType": {
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+        "ImageId": {
+            "Type": "String",
+            "Default": "ami-0bdcc6c05dec346bf"
+        },
+        "KeySSH": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        }
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "ec2Bastion": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {"Ref": "ImageId"},
+                "KeyName": {"Ref": "KeySSH"},
+                "InstanceType": { "Ref" : "InstanceType" },
+                "SubnetId": {"Fn::ImportValue": "infrastructure-subNetPublic1"},
+                "SecurityGroupIds": [
+                    {
+                        "Fn::ImportValue": "infrastructure-sgBastion"
+                    }
+                ]
+            }
+        }
+
+    },
+    "Outputs": {
+        "dnsPublicEC2": {
+            "Description": "Public DNS to EC2",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ec2Bastion",
+                    "PublicDnsName"
+                ]
+            }
+        }
+    }
+}

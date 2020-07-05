@@ -1,0 +1,214 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "VPC del curso",
+    "Metadata": {},
+    "Parameters": {},
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "sgMysqlRDS": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security to RDS Mysql",
+                "VpcId": {
+                    "Fn::ImportValue": "infrastructure-idVPC"
+                },
+                "SecurityGroupIngress": [],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgMysqlRDS"
+                    }
+                ]
+            }
+        },
+        "sgBastion": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security to RDS Mysql",
+                "VpcId": {
+                    "Fn::ImportValue": "infrastructure-idVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "TCP",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "0.0.0.0/0"
+
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgBastion"
+                    }
+                ]
+			}
+        },
+        "sgMonolito": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow balancer traffic (from other rule) and out to internet",
+                "VpcId": {
+                    "Fn::ImportValue": "infrastructure-idVPC"
+                },
+                "SecurityGroupIngress": [],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgMonolito"
+                    }
+                ]
+			}
+        },
+        "sgBalancer": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Expose port 80 balancer",
+                "VpcId": {
+                    "Fn::ImportValue": "infrastructure-idVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "TCP",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "TCP",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "-1",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sgBalancer"
+                    }
+                ]
+			}
+            },
+        "ruleInBalancerToMonolito": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "Description": "IN RULE - Allow balancer traffic",
+                "GroupId": {
+                    "Ref": "sgMonolito"
+                },
+                "IpProtocol": "-1",
+                "SourceSecurityGroupId": {
+                    "Ref": "sgBalancer"
+                }
+            }
+        },
+        "ruleInBastionToMonolito": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "Description": "IN RULE - Allow bastion traffic",
+                "GroupId": {
+                    "Ref": "sgMonolito"
+                },
+                "IpProtocol": "-1",
+                "SourceSecurityGroupId": {
+                    "Ref": "sgBastion"
+                }
+            }
+        },
+        "ruleInMonolitoToMysqlRDS": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "Description": "IN RULE - Allow Monolito mysql traffic",
+                "GroupId": {
+                    "Ref": "sgMysqlRDS"
+                },
+                "IpProtocol": "tcp",
+                "FromPort": "3306",
+                "ToPort": "3306",
+                "SourceSecurityGroupId": {
+                    "Ref": "sgMonolito"
+                }
+            }
+        },
+        "ruleInBastionToMysqlRDS": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "Description": "IN RULE - Allow bastion mysql traffic",
+                "GroupId": {
+                    "Ref": "sgMysqlRDS"
+                },
+                "IpProtocol": "tcp",
+                "FromPort": "3306",
+                "ToPort": "3306",
+                "SourceSecurityGroupId": {
+                    "Ref": "sgBastion"
+                }
+            }
+        }
+		
+    },
+    "Outputs": {
+        "sgMysqlRDS": {
+            "Description": "Database Security Group",
+            "Value": {
+                "Fn::GetAtt": [
+                    "sgMysqlRDS",
+                    "GroupId"
+                ]
+            },
+            "Export" : { "Name" : "infrastructure-sgMysqlRDS" }
+        },
+        "sgBastion": {
+            "Description": "EC2 Bastion Security Group",
+            "Value": {
+                "Fn::GetAtt": [
+                    "sgBastion",
+                    "GroupId"
+                ]
+            },
+            "Export" : { "Name" : "infrastructure-sgBastion" }
+        },
+        "sgMonolito": {
+            "Description": "EC2 sgMonolito Security Group ",
+            "Value": {
+                "Fn::GetAtt": [
+                    "sgMonolito",
+                    "GroupId"
+                ]
+            },
+            "Export" : { "Name" : "infrastructure-sgMonolito" }
+        },
+        "sgBalanceador": {
+            "Description": "EC2 sgBalanceador Security Group",
+            "Value": {
+                "Fn::GetAtt": [
+                    "sgBalancer",
+                    "GroupId"
+                ]
+            },
+            "Export" : { "Name" : "infrastructure-sgBalanceador" }
+        }
+    }
+    
+
+}    

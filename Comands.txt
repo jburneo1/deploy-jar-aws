@@ -10,7 +10,7 @@
 // instalar en la ec2 el utilitario de mysql (Dentro de la instancia)
 ● sudo yum install mysql -y
 
-// conectandose a la instancia privada
+// conectandose a la instancia privada de una rds via bastion
 ● mysql -h "url-instance" -u root -p
 
 
@@ -19,24 +19,30 @@
 #Comandos Maven - Java
 // generar jar
 ● mvn -f api-persona/pom.xml clean package -Dmaven.test.skip=true
+mvn clean package -Dmaven.test.skip=true
 
 
 #Comandos Docker
  // build image: 
- ● docker build -t NOMBRE_IMAGEN CONTEXTO 
+ ● docker build -t hiberu . 
  
  // Crear tag de una imagen: 
  ● docker tag imagen_demo:latest nueva_imagen:v1 
 
  // Lanzar un contenedor a partir de una imagen*: 
- docker run -d -p 3611:3606 --name mysql-container mysql
+ docker run -d -p 3611:3606 --name mysql-container postgres
+ docker run -d -p 5432 --name postgres_container postgres
  docker run -d --name servidor_mysql jburneo1/caws-mysql #Está corriendo en el port por default
  docker run -d -p 8085:8084 --name api_persona --link servidor_mysql:dns_base_datos jburneo1/api-java
  docker run -d -p 8085:8084 --name api-java-preferencias --link servidor_mysql:mysql_server --link api_persona:apipersona jburneo1/api-java
  
+ 
+ 
  // Correr dos contenedores diferentes
  docker run -d -p 8080:8080 --link dns_base_datos:my_sql_server
  docker run -d -p 8084:8084 --link mysql_server:dns_base_datos --name api-java mi_api_persona
+ 
+ docker run -d -p 8080:8080 --name api-java api-checkout
  
  
  // Correr un contenedor con el tag de la imagen
@@ -44,6 +50,10 @@
  
  // Correr contenedor mysql a partir de imagen
  docker run -d -p 3311:3306 --name mysql -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=demobd -e MYSQL_ROOT_HOST=% mysql:5.7.28 --default-authentication-plugin=mysql_native_password
+ docker run -d -p 5433:5432 --name postgres -e MYSQL_ROOT_PASSWORD=12345678 -e MYSQL_DATABASE=bd_service -e  --default-authentication-plugin=mysql_native_password
+ docker run -d -p 5433:5432 --name postsql -e POSTGRES_PASSWORD=123456 hiberu
+
+ docker exec
  
  // Correr contenedor con dockerfile
  docker run -d -p 3312:3306 my_image_bd
@@ -55,7 +65,8 @@
  docker inspect contenedor-demo 
  
  // Conectar vía ssh a un contenedor: 
- docker exec -it contenedor-demo /bin/bash # O hacerlo solo con bash
+ docker exec -it 96e5409f33e3 /bin/bash # O hacerlo solo con bash
+ psql -U postgres --Conectar via postgres
  docker exec -it contenedor-demo sh --open jdk alpine
  
  // Detener un contenedor: 

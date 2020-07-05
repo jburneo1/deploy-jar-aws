@@ -1,0 +1,125 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Configuration",
+    "Metadata": {},
+    "Parameters": {
+        "emailUserAdmin": {
+            "Type": "String",
+            "Description": "Default admin user email"
+        }
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "userPoolDummy": {
+            "Type": "AWS::Cognito::UserPool",
+            "Properties": {
+                "AdminCreateUserConfig": {
+                    "AllowAdminCreateUserOnly": true,
+                    "InviteMessageTemplate": {
+                        "EmailMessage": "Your username {username} has been created and your temporary password is {####}",
+                        "EmailSubject": "High AWS account"
+                    },
+                    "UnusedAccountValidityDays": 7
+                },
+                "AutoVerifiedAttributes": [
+                    "email"
+                ],
+                "EmailVerificationMessage": "Your verification code is {####}.",
+                "EmailVerificationSubject": "Your verification code",
+                "Policies": {
+                    "PasswordPolicy": {
+                        "MinimumLength": 6,
+                        "RequireLowercase": false,
+                        "RequireNumbers": false,
+                        "RequireSymbols": false,
+                        "RequireUppercase": false
+                    }
+                },
+                "UserPoolName": "userPoolDummy"
+            }
+        },
+        "clientAngular": {
+            "Type": "AWS::Cognito::UserPoolClient",
+            "Properties": {
+                "ClientName": "angular",
+                "ExplicitAuthFlows": [
+                    "ADMIN_NO_SRP_AUTH"
+                ],
+                "GenerateSecret": false,
+                "ReadAttributes": [
+                    "email"
+                ],
+                "RefreshTokenValidity": 2,
+                "UserPoolId": {
+                    "Ref": "userPoolDummy"
+                }
+            }
+        },
+        "userAdmin": {
+            "Type": "AWS::Cognito::UserPoolUser",
+            "Properties": {
+                "DesiredDeliveryMediums": [
+                    "EMAIL"
+                ],
+                "Username": "admin",
+                "UserAttributes": [
+                    {
+                        "Name": "email",
+                        "Value": {
+                            "Ref": "emailUserAdmin"
+                        }
+                    }
+                ],
+                "UserPoolId": {
+                    "Ref": "userPoolDummy"
+                }
+            }
+        },
+        "adminGroup": {
+            "Type": "AWS::Cognito::UserPoolGroup",
+            "Properties": {
+                "Description": "Admin User Groups",
+                "GroupName": "ADMIN",
+                "Precedence": 5,
+                "UserPoolId": {
+                    "Ref": "userPoolDummy"
+                }
+            }
+        },
+        "adminUserToAdminGroup": {
+            "Type": "AWS::Cognito::UserPoolUserToGroupAttachment",
+            "DependsOn": [
+              "userAdmin",
+              "adminGroup"
+            ],
+            "Properties": {
+              "GroupName": "ADMIN",
+              "Username": "admin",
+              "UserPoolId": {
+                "Ref": "userPoolDummy"
+              }
+            }
+        }    
+    },
+    "Outputs": {
+        "cognitoIdUserPool": {
+          "Description": "Cognito Group ID",
+          "Value": {
+            "Ref": "userPoolDummy"
+          },
+          "Export": {
+            "Name": "cognito-pool-id"
+          }
+        },
+        "clientIdAngular": {
+          "Description": "Angular Oauth Client ID",
+          "Value": {
+            "Ref": "clientAngular"
+          },
+          "Export": {
+            "Name": "cognito-client-angular"
+          }
+        }
+      }
+}

@@ -1,0 +1,69 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "RDS Database Mysql To Course",
+    "Metadata": {},
+    "Parameters": {
+    },
+    "Mappings": {},
+    "Conditions": {},
+    "Resources": {
+        "myQueue": {
+            "Type": "AWS::SQS::Queue",
+            "DependsOn": "myFailQueue",
+            "Properties": {
+                "RedrivePolicy": {
+                    "deadLetterTargetArn": {
+                        "Fn::GetAtt": [
+                            "myFailQueue",
+                            "Arn"
+                        ]
+                    },
+                    "maxReceiveCount": 5
+                }
+            }
+        },
+        "myFailQueue": {
+            "Type": "AWS::SQS::Queue"
+        },
+        "mySNSTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "Subscription": [
+                    {
+                        "Endpoint": {
+                            "Fn::GetAtt": [
+                                "myQueue",
+                                "Arn"
+                            ]
+                        },
+                        "Protocol": "sqs"
+                    }
+                ],
+                "TopicName": "CourseTopic"
+            }
+        }
+    },
+    "Outputs": {
+        "arnTopicSNS": {
+            "Description": "ARN of SNS that send data to SQS",
+            "Value": {
+                "Ref" : "mySNSTopic"
+            },
+            "Export": {
+                "Name": "infrastructure-arnTopicoSNS"
+            }
+        },
+        "nameQueue": {
+            "Description": "Queue name created by CF",
+            "Value": {
+                "Fn::GetAtt": [
+                    "myQueue",
+                    "QueueName"
+                ]
+            },
+            "Export": {
+                "Name": "infrastructure-nameQueue"
+            }
+        }
+    }
+}

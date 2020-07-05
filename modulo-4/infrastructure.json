@@ -1,0 +1,170 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "VPC del curso",
+    "Metadata": {},
+    "Parameters": {
+        "azPublic1": {
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "azPublic2": {
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "azPrivate1": {
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "azPrivate2": {
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        }
+    },
+    "Mappings":{},
+    "Conditions": {},
+    "Resources": {
+        "myCourseVpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/16",
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "InstanceTenancy": "default"
+            }
+        },
+        "myIG": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {}
+        },
+        "attachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {"Ref": "myCourseVpc"},
+                "InternetGatewayId": {"Ref": "myIG"}
+            }
+        },
+        "myPublicNetwork1": {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+               "VpcId" : { "Ref" : "myCourseVpc" },
+               "CidrBlock" : "10.0.30.0/24",
+               "AvailabilityZone" : { "Ref" : "azPublic1" },
+               "MapPublicIpOnLaunch": true
+            }
+        },
+        "myPublicNetwork2": {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : { "Ref" : "myCourseVpc" },
+                "CidrBlock" : "10.0.40.0/24",
+                "AvailabilityZone" : { "Ref" : "azPublic2" },
+                "MapPublicIpOnLaunch": true
+             }
+        },
+        "myPrivateNetwork1": {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : { "Ref" : "myCourseVpc" },
+                "CidrBlock" : "10.0.3.0/24",
+                "AvailabilityZone" : { "Ref" : "azPrivate1" }
+             }
+        },
+        "myPrivateNetwork2": {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : { "Ref" : "myCourseVpc" },
+                "CidrBlock" : "10.0.4.0/24",
+                "AvailabilityZone" : { "Ref" : "azPrivate2" }
+             }
+        },
+        "myPublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {"Ref": "myCourseVpc"}
+            }
+        },
+        "myPrivateRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {"Ref": "myCourseVpc"}
+            }
+        },
+        "mySbRTPublic1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myPublicNetwork1"},
+                "RouteTableId": {"Ref": "myPublicRouteTable"}
+            }
+        },
+        "mySbRTPublic2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myPublicNetwork2"},
+                "RouteTableId": {"Ref": "myPublicRouteTable"}
+            }
+        },
+        "mySbRTPrivate1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myPrivateNetwork1"},
+                "RouteTableId": {"Ref": "myPrivateRouteTable"}
+            }
+        },
+        "mySbRTPrivate2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "myPrivateNetwork2"},
+                "RouteTableId": {"Ref": "myPrivateRouteTable"}
+            }
+        },
+        "myRoute": {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : "myIG",
+            "Properties": {
+                "RouteTableId": {"Ref": "myPublicRouteTable"},
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {"Ref":"myIG"}
+            }
+        }
+    },
+    "Outputs": {
+        "idVPC": {
+            "Description": "Id VPC",
+            "Value": {
+                "Ref": "myCourseVpc"
+            },
+            "Export": {"Name": "infrastructure-idVPC"}
+        },
+        "cidrBlockVPC": {
+            "Description": "CIDR block IP VPC",
+            "Value": {
+                "Fn::GetAtt" : [ "myCourseVpc", "CidrBlock" ]
+            },
+            "Export" : { "Name" : "infrastructure-cidrBlockVPC" }
+        },
+        "privateNetwork1": {
+            "Description": "Private Network 1",
+            "Value": {
+                "Ref": "myPrivateNetwork1"
+            },
+            "Export" : { "Name" : "infrastructure-subNetPrivate1" }
+        },
+        "privateNetwork2": {
+            "Description": "Private Network 2",
+            "Value": {
+                "Ref" : "myPrivateNetwork2"
+            },
+            "Export" : { "Name" : "infrastructure-subNetPrivate2" }
+        },
+        "publicNetwork1": {
+            "Description": "Public Network 1",
+            "Value": {
+                "Ref" : "myPublicNetwork1"
+            },
+            "Export" : { "Name" : "infrastructure-subNetPublic1" }
+        },
+        "publicNetwork2": {
+            "Description": "Public Network 2",
+            "Value": {
+                "Ref" : "myPublicNetwork2"
+            },
+            "Export" : { "Name" : "infrastructure-subNetPublic2" }
+        }
+    }
+}
