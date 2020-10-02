@@ -151,6 +151,9 @@ sudo -u postgres psql
 
 //Listar todas las bases de datos.
 show databases;
+
+// postgresql;
+\l
 //Listar todas las tablas de una base de datos.
 show tables;
 // – Muestra información sobre las tablas de la base de datos.
